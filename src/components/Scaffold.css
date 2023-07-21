@@ -1,0 +1,15 @@
+.scaffold {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.inside {
+    width: 93%;
+    max-width: 59rem;
+}
+
+.scaffold.shelf .inside {
+    width: 93%;
+    max-width: 78rem;
+}
