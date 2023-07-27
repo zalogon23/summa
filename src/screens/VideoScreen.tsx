@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import MediaPlayer from '../components/MediaPlayer'
 import MediaDescription from '../components/MediaDescription'
 import { useLoaderData } from 'react-router-dom'
+import { useState } from 'react'
 
 type Loader = {
     videoId: string
@@ -10,9 +11,11 @@ type Loader = {
 
 function VideoScreen() {
     const { videoId } = useLoaderData() as Loader
+    const [summary, setSummary] = useState("")
+
     return (
         <Scaffold>
-            <Header />
+            <Header setSummary={setSummary} />
             <MediaPlayer />
             <MediaDescription />
         </Scaffold>

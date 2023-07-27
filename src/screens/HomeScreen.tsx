@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Scaffold from '../components/Scaffold'
 import Header from '../components/Header'
-import Shelf from '../components/Shelf'
+import "./Summary.css"
 
 type Props = {}
 
 function HomeScreen({ }: Props) {
+    const [summary, setSummary] = useState("")
+
     return (
-        <Scaffold shelf>
-            <Header />
-            <Shelf title="Recent Content" />
+        <Scaffold>
+            <Header setSummary={setSummary} />
+            {summary && <section className="summary" dangerouslySetInnerHTML={{ __html: summary }} />}
         </Scaffold>
     )
 }

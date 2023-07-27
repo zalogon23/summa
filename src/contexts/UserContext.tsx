@@ -2,6 +2,7 @@ import { ReactElement, createContext, useEffect, useState } from "react";
 import { tokenService } from "../services/TokenService";
 import { userService } from "../services/UserService";
 import { UserDTO } from "../dtos/UserDTO";
+import { interceptor } from "../interceptors/interceptor";
 
 export const userContext = createContext(null as any as UserDTO)
 
