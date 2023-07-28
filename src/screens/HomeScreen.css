@@ -1,0 +1,83 @@
+body {
+    position: relative;
+}
+
+.summary p,
+.summary ul,
+.summary h3 {
+    padding-bottom: 0.8rem;
+}
+
+.summary ul,
+.summary ol {
+    margin-bottom: 0.8rem;
+    padding: 1rem;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    border-radius: 0.6rem;
+}
+
+.summary li {
+    list-style-type: disc
+}
+
+.summary h3 {
+    font-size: 1.33rem;
+    font-weight: 600;
+}
+
+.summary {
+    padding-bottom: 2rem;
+    padding-top: 6.5rem;
+}
+
+.loading-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    height: 100vh;
+    padding-top: 4.5rem;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 45rem;
+}
+
+form {
+    display: flex;
+}
+
+.search {
+    width: 95%;
+}
+
+.summary img {
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
+header form {
+    min-width: 200px;
+    width: 50%;
+}
+
+.log {
+    width: 30%;
+}
+
+@media (max-width: 330px) {
+    .login {
+        display: none;
+    }
+}

@@ -11,14 +11,16 @@ type Loader = {
 
 function VideoScreen() {
     const { videoId } = useLoaderData() as Loader
-    const [summary, setSummary] = useState("")
+    const [response, setResponse] = useState(null as any)
 
     return (
-        <Scaffold>
-            <Header setSummary={setSummary} />
-            <MediaPlayer />
-            <MediaDescription />
-        </Scaffold>
+        <>
+            <Header setLoading={() => { }} loading={false} setResponse={setResponse} />
+            <Scaffold>
+                <MediaPlayer />
+                <MediaDescription />
+            </Scaffold>
+        </>
     )
 }
 

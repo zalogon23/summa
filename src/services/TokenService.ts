@@ -19,7 +19,8 @@ class TokenService {
     }
 
     hasToken() {
-        return !!localStorage.getItem("token")
+        const token = localStorage.getItem("token")
+        return !!token && token != "undefined";
     }
 
     getURLToken() {
