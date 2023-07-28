@@ -8,21 +8,25 @@ class VideoService {
             const response = await interceptor.fetch(`${process.env.REACT_APP_BACKEND_URL}/video/${parsedUrl}`);
             const json = await response.json()
             if (!json.ok) {
-                toast.warning(json.message)
+                toast.warning(json.message, {
+                    autoClose: 2.8 * 1000
+                })
                 return null
             }
             return json
         } catch (err) {
             console.error(err)
         }
-    } 
+    }
     async getDuration(url: string) {
         try {
             const parsedUrl = encodeURIComponent(url)
             const response = await interceptor.fetch(`${process.env.REACT_APP_BACKEND_URL}/video/duration/${parsedUrl}`);
             const json = await response.json()
             if (!json.ok) {
-                toast.warning(json.message)
+                toast.warning(json.message, {
+                    autoClose: 2.8 * 1000
+                })
                 return null
             }
             return json

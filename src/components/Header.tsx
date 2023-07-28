@@ -52,13 +52,15 @@ function Header({ setResponse, setLoading, loading }: Props) {
                                 setSearch("")
                                 const duration = await videoService.getDuration(url)
                                 console.log(duration)
-                                const toastId = toast.info("This redaction is estimated to take " + Math.floor(duration.duration * 4) + " seconds.", {
+                                const toastId = toast.info("This redaction is estimated to take " + Math.floor(duration.duration * Number(process.env.REACT_APP_SUMMARY_RATIO)) + " seconds.", {
                                     hideProgressBar: false,
                                     position: "bottom-center",
                                     pauseOnFocusLoss: false,
                                     pauseOnHover: false,
-                                    autoClose: duration.duration * 4 * 1000
+                                    autoClose: duration.duration * Number(process.env.REACT_APP_SUMMARY_RATIO) * 1000
                                 })
+                                console.log(process.env.REACT_APP_SUMMARY_RATIO)
+                                console.log(duration)
                                 const summaryJson = await videoService.getSummary(url)
                                 toast.dismiss(toastId)
                                 setLoading(false)
