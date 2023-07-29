@@ -26,7 +26,7 @@ function HomeScreen({ }: Props) {
                 {
                     !loading && !response &&
                     <section className="summary">
-                        <h2 className="text-3xl mb-4">Summarize content to consume faster 🥩</h2>
+                        <h2 className="text-3xl mb-4">Summarize media content to consume faster 🍗</h2>
                         <ul>
                             <li>Write a Youtube video URL</li>
                             <li>Click Search</li>

@@ -27,7 +27,7 @@ class Interceptor {
                 const updatedConfig = { ...config, headers };
                 const retryResponse = await fetch(resource, updatedConfig);
 
-                if (retryResponse.status === 401) {
+                if (retryResponse.status === 403) {
 
                     window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/google`;
                     return Promise.reject();

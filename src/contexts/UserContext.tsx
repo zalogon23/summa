@@ -4,7 +4,12 @@ import { userService } from "../services/UserService";
 import { UserDTO } from "../dtos/UserDTO";
 import { interceptor } from "../interceptors/interceptor";
 
-export const userContext = createContext(null as any as UserDTO)
+interface UserContext {
+    user: UserDTO,
+    setUser: React.Dispatch<React.SetStateAction<UserDTO>>
+}
+
+export const userContext = createContext(null as any as UserContext)
 
 type Props = {
     children: ReactElement
@@ -32,7 +37,7 @@ export default function UserProvider({ children }: Props) {
     }, [])
 
     return (
-        <userContext.Provider value={user}>
+        <userContext.Provider value={{ user, setUser }}>
             {children}
         </userContext.Provider>
     )

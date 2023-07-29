@@ -1,4 +1,4 @@
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faCoins, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Helper } from "../lib/helper"
 import GoogleSignInButton from './GoogleSignInButton'
@@ -7,6 +7,7 @@ import { userContext } from '../contexts/UserContext'
 import { videoService } from '../services/VideoService'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify'
+import { userService } from '../services/UserService'
 
 type Props = {
     setResponse: React.Dispatch<any>
@@ -15,17 +16,28 @@ type Props = {
 }
 
 function Header({ setResponse, setLoading, loading }: Props) {
-    const user = useContext(userContext)
+    const { user, setUser } = useContext(userContext)
     const [search, setSearch] = useState("")
 
     return (
         <>
             <header className="flex items-center pt-3 pb-5 justify-between">
-                <div className="log">
+                <div className="log flex items-center">
                     {
                         user
                             ?
-                            <img src={user.avatar} className="w-10 h-10 mr-10 rounded-full" />
+                            <>
+                                <img src={user.avatar} className="w-10 h-10 mr-2 rounded-full" />
+                                <div
+                                    className="bg-black py-1 px-2 flex flex-nowrap items-center rounded-md text-white"
+                                >
+                                    <span
+                                        className="font-semibold mr-1"
+                                    >{user.coins}</span>
+                                    <FontAwesomeIcon icon={faCoins} />
+
+                                </div>
+                            </>
                             :
                             <GoogleSignInButton />
                     }
@@ -48,25 +60,36 @@ function Header({ setResponse, setLoading, loading }: Props) {
                                 }
                                 setLoading(true)
                                 setResponse(null as any)
+
                                 const url = search
                                 setSearch("")
-                                const duration = await videoService.getDuration(url)
-                                console.log(duration)
-                                const toastId = toast.info("This redaction is estimated to take " + Math.floor(duration.duration * Number(process.env.REACT_APP_SUMMARY_RATIO)) + " seconds.", {
+
+                                const duration = Math.floor((await videoService.getDuration(url)).duration)
+
+                                if (user.coins < duration) {
+                                    toast.warn("You haven't enough coins for this video. 😢 (" + duration + " coins)")
+                                    setLoading(false)
+                                    return
+                                }
+                                const toastId = toast.info("This redaction is estimated to take " + Math.floor(duration * Number(process.env.REACT_APP_SUMMARY_RATIO)) + " seconds.", {
                                     hideProgressBar: false,
                                     position: "bottom-center",
                                     pauseOnFocusLoss: false,
                                     pauseOnHover: false,
-                                    autoClose: duration.duration * Number(process.env.REACT_APP_SUMMARY_RATIO) * 1000
+                                    autoClose: duration * Number(process.env.REACT_APP_SUMMARY_RATIO) * 1000
                                 })
-                                console.log(process.env.REACT_APP_SUMMARY_RATIO)
-                                console.log(duration)
+
                                 const summaryJson = await videoService.getSummary(url)
+                                const coins = await userService.getCoins()
+
+                                setUser({ ...user, coins })
+
                                 toast.dismiss(toastId)
                                 setLoading(false)
                                 setResponse(summaryJson)
                             } catch (err) {
                                 setLoading(false)
+                                toast.dismiss()
                             }
                         }} className="w-12 text-gray-400 py-2 pr-1 border-y-0 border-r-0 border-l-gray-400 border-2">
                         <FontAwesomeIcon icon={faSearch} />
@@ -75,7 +98,7 @@ function Header({ setResponse, setLoading, loading }: Props) {
             </header >
             <ToastContainer
                 position="top-center"
-                autoClose={3000} // Set the time (in milliseconds) that the toast should be shown
+                autoClose={4400} // Set the time (in milliseconds) that the toast should be shown
                 hideProgressBar={true}
                 closeOnClick
                 pauseOnHover
