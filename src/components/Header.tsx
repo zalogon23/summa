@@ -2,7 +2,7 @@ import { faCoins, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Helper } from "../lib/helper"
 import GoogleSignInButton from './GoogleSignInButton'
-import { useContext, useRef, useState } from 'react'
+import { MouseEventHandler, useContext, useRef, useState } from 'react'
 import { userContext } from '../contexts/UserContext'
 import { videoService } from '../services/VideoService'
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,16 +12,69 @@ import { userService } from '../services/UserService'
 type Props = {
     setResponse: React.Dispatch<any>
     setLoading: React.Dispatch<React.SetStateAction<any>>,
+    expanded: boolean,
+    setExpanded: React.Dispatch<React.SetStateAction<boolean>>,
     loading: boolean
 }
 
-function Header({ setResponse, setLoading, loading }: Props) {
+function Header({ setResponse, setLoading, loading, expanded, setExpanded }: Props) {
     const { user, setUser } = useContext(userContext)
     const [search, setSearch] = useState("")
 
+    const handleSearch: MouseEventHandler<HTMLButtonElement> = async (e) => {
+        e.stopPropagation()
+        try {
+            if (!user) {
+                toast.error("You gotta login with Google")
+                return
+            }
+            if (!expanded) {
+                setExpanded(true)
+                return
+            }
+            if (!videoService.isValidYouTubeUrl(search)) {
+                toast.error("Doesn't look like a valid Youtube URL")
+                return
+            }
+            setLoading(true)
+            setResponse(null as any)
+
+            const url = search
+            setSearch("")
+
+            const duration = Math.floor((await videoService.getDuration(url)).duration)
+            if (user.coins < duration) {
+                toast.warn("You haven't enough coins for this video. 😢 (" + duration + " coins)")
+                setLoading(false)
+                return
+            }
+            const toastId = toast.info("This redaction is estimated to take " + Math.floor(duration * Number(process.env.REACT_APP_SUMMARY_RATIO)) + " seconds.", {
+                hideProgressBar: false,
+                position: "bottom-center",
+                pauseOnFocusLoss: false,
+                pauseOnHover: false,
+                autoClose: duration * Number(process.env.REACT_APP_SUMMARY_RATIO) * 1000
+            })
+
+            const summaryJson = await videoService.getSummary(url)
+            const coins = await userService.getCoins()
+
+            setUser({ ...user, coins })
+
+            toast.dismiss(toastId)
+            setLoading(false)
+            setResponse(summaryJson)
+        } catch (err) {
+            setLoading(false)
+            toast.dismiss()
+        }
+    }
+
     return (
         <>
-            <header className="flex items-center pt-3 pb-5 justify-between">
+            <header
+                onClick={() => setExpanded(false)}
+                className="flex items-center pt-3 pb-5 justify-between">
                 <div className="log flex items-center">
                     {
                         user
@@ -43,55 +96,14 @@ function Header({ setResponse, setLoading, loading }: Props) {
                     }
                 </div>
                 <form
-                    className="border-gray-400 border-2 rounded-3xl overflow-hidden"
+                    className={`search-container${expanded ? ' expanded' : ''} border-gray-400 border-2 rounded-3xl overflow-hidden`}
                     onSubmit={Helper.prevent}>
-                    <input value={search} onChange={e => setSearch(e.target.value)} className="w-80 py-2 rounded-l-3xl pl-3 pr-1 search" type="text" placeholder="Enter a Youtube URL!" />
+                    <input
+                        onClick={e => e.stopPropagation()}
+                        value={search} onChange={e => setSearch(e.target.value)} className={`search-input${expanded ? ' expanded' : ''} w-80 py-2 rounded-l-3xl pl-3 pr-1 search border-y-0 border-l-0 border-r-gray-400 border-2`} type="text" placeholder="Enter a Youtube URL!" />
                     <button
                         disabled={loading}
-                        onClick={async () => {
-                            try {
-                                if (!user) {
-                                    toast.error("You gotta login with Google")
-                                    return
-                                }
-                                if (!videoService.isValidYouTubeUrl(search)) {
-                                    toast.error("Doesn't look like a valid Youtube URL")
-                                    return
-                                }
-                                setLoading(true)
-                                setResponse(null as any)
-
-                                const url = search
-                                setSearch("")
-
-                                const duration = Math.floor((await videoService.getDuration(url)).duration)
-
-                                if (user.coins < duration) {
-                                    toast.warn("You haven't enough coins for this video. 😢 (" + duration + " coins)")
-                                    setLoading(false)
-                                    return
-                                }
-                                const toastId = toast.info("This redaction is estimated to take " + Math.floor(duration * Number(process.env.REACT_APP_SUMMARY_RATIO)) + " seconds.", {
-                                    hideProgressBar: false,
-                                    position: "bottom-center",
-                                    pauseOnFocusLoss: false,
-                                    pauseOnHover: false,
-                                    autoClose: duration * Number(process.env.REACT_APP_SUMMARY_RATIO) * 1000
-                                })
-
-                                const summaryJson = await videoService.getSummary(url)
-                                const coins = await userService.getCoins()
-
-                                setUser({ ...user, coins })
-
-                                toast.dismiss(toastId)
-                                setLoading(false)
-                                setResponse(summaryJson)
-                            } catch (err) {
-                                setLoading(false)
-                                toast.dismiss()
-                            }
-                        }} className="w-12 text-gray-400 py-2 pr-1 border-y-0 border-r-0 border-l-gray-400 border-2">
+                        onClick={handleSearch} className="search-button w-12 text-gray-400 py-2">
                         <FontAwesomeIcon icon={faSearch} />
                     </button>
                 </form>

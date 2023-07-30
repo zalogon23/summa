@@ -29,7 +29,7 @@ export default function UserProvider({ children }: Props) {
             } else if (tokenService.hasToken()) {
                 const foundUser = await userService.getUser()
                 setUser(foundUser)
-                console.log("There is TOKEN in LocalStorage")
+                console.log("There is TOKEN in house")
             } else {
                 console.log("There is NO Token")
             }

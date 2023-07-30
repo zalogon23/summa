@@ -67,11 +67,6 @@ form {
     object-fit: cover;
 }
 
-header form {
-    min-width: 160px;
-    width: 50%;
-}
-
 .log {
     width: 30%;
 }
@@ -80,4 +75,35 @@ header form {
     .login {
         display: none;
     }
+}
+
+.search-container {
+    transition: width 0.5s;
+    width: 6%;
+    min-width: 40px;
+}
+
+.search-button {
+    cursor: pointer;
+    width: 40px;
+}
+
+.search-input {
+    flex: 1;
+    display: none;
+}
+
+.search-container.expanded {
+    width: 55%;
+    max-width: 308px;
+    /* Expanded width of the container */
+}
+
+.search-input.expanded {
+    display: inline-block;
+}
+
+.search-container.expanded .search-button {
+    min-width: 0;
+    padding-right: 1%;
 }

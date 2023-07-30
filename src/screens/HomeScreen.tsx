@@ -9,11 +9,12 @@ type Props = {}
 function HomeScreen({ }: Props) {
     const [response, setResponse] = useState(null as any)
     const [loading, setLoading] = useState(false)
+    const [expanded, setExpanded] = useState(false);
 
     return (
         <>
-            <Header {...{ setLoading, setResponse, loading }} />
-            <Scaffold>
+            <Header {...{ setLoading, setResponse, loading, expanded, setExpanded }} />
+            <Scaffold handleClick={() => setExpanded(false)}>
                 {loading
                     &&
                     <section className="loading-section">
